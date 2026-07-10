@@ -67,6 +67,13 @@ function resizeLiveCanvas(){
   syncTextWidthInput();
 }
 
+function getCanvasDisplaySize(){
+  return {
+    width: Math.max(1, Math.round(baseW * displayScale)),
+    height: Math.max(1, Math.round(baseH * displayScale))
+  };
+}
+
 /* Template upload */
 function setupDrop(dropEl, inputEl, handler){
   dropEl.addEventListener('click', ()=>inputEl.click());
@@ -538,12 +545,18 @@ async function renderPreview(){
     const url=await renderRow(row);
     const img=new Image();
     img.onload=()=>{
-      $('canvasFrame').style.display='block';
+      const display = getCanvasDisplaySize();
+      $('canvasFrame').style.display='inline-block';
+      $('canvasFrame').style.width=display.width+'px';
+      $('canvasFrame').style.height=display.height+'px';
       $('canvasFrame').innerHTML='<canvas id="cv"></canvas>';
       const cv=$('cv');
-      cv.width=baseW; cv.height=baseH;
+      cv.width=display.width;
+      cv.height=display.height;
+      cv.style.width=display.width+'px';
+      cv.style.height=display.height+'px';
       const ctx=cv.getContext('2d');
-      ctx.drawImage(img,0,0);
+      ctx.drawImage(img,0,0,display.width,display.height);
       $('previewPill').textContent='preview row '+(previewRowIndex+1);
     };
     img.onerror=()=>{
@@ -574,6 +587,7 @@ async function generateAll(){
   }
   prog.classList.remove('show');
   $('zipBtn').disabled=false;
+  $('pdfBtn').disabled=false;
   toast('Generated '+generated.length+' certificates');
 }
 
@@ -587,6 +601,61 @@ async function downloadZip(){
   const blob=await zip.generateAsync({type:'blob'});
   saveAs(blob,'certificates.zip');
   toast('Downloaded '+generated.length+' certificates');
+}
+
+async function imageSizeFromDataURL(dataURL){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>resolve({width:img.width,height:img.height});
+    img.onerror=()=>resolve({width:baseW||1000,height:baseH||700});
+    img.src=dataURL;
+  });
+}
+
+async function downloadPdf(){
+  if(!generated.length){ toast('Generate certificates first', true); return; }
+  const jsPDF = window.jspdf && window.jspdf.jsPDF;
+  if(!jsPDF){ toast('PDF library is unavailable', true); return; }
+
+  const perPage=Math.max(1, parseInt($('certsPerPage').value,10) || 6);
+  const orientation=$('certPageOrientation').value==='landscape' ? 'landscape' : 'portrait';
+  const pageW=orientation==='landscape' ? 841.89 : 595.28;
+  const pageH=orientation==='landscape' ? 595.28 : 841.89;
+  const margin=24;
+  const gap=12;
+  const sizes=await Promise.all(generated.map(g=>imageSizeFromDataURL(g.dataURL)));
+  const maxW=Math.max(...sizes.map(s=>s.width));
+  const maxH=Math.max(...sizes.map(s=>s.height));
+  let best={cols:1, rows:perPage, scale:0};
+
+  for(let cols=1; cols<=perPage; cols++){
+    const rows=Math.ceil(perPage/cols);
+    const cellW=(pageW - margin*2 - gap*(cols-1))/cols;
+    const cellH=(pageH - margin*2 - gap*(rows-1))/rows;
+    const scale=Math.min(cellW/maxW, cellH/maxH);
+    if(scale>best.scale) best={cols,rows,scale};
+  }
+
+  const cellW=(pageW - margin*2 - gap*(best.cols-1))/best.cols;
+  const cellH=(pageH - margin*2 - gap*(best.rows-1))/best.rows;
+  const scale=Math.min(cellW/maxW, cellH/maxH);
+  const pdf=new jsPDF({orientation, unit:'pt', format:'a4'});
+
+  generated.forEach((g,index)=>{
+    if(index>0 && index%perPage===0) pdf.addPage('a4', orientation);
+    const slot=index%perPage;
+    const col=slot%best.cols;
+    const row=Math.floor(slot/best.cols);
+    const size=sizes[index];
+    const imgW=size.width*scale;
+    const imgH=size.height*scale;
+    const x=margin + col*(cellW+gap) + (cellW-imgW)/2;
+    const y=margin + row*(cellH+gap) + (cellH-imgH)/2;
+    pdf.addImage(g.dataURL, 'PNG', x, y, imgW, imgH);
+  });
+
+  pdf.save('certificates.pdf');
+  toast('Downloaded '+generated.length+' certificates as PDF');
 }
 
 /* Event setup */
@@ -608,5 +677,6 @@ $('importLayout').addEventListener('change', ()=>{ if($('importLayout').files.le
 $('previewBtn').addEventListener('click', renderPreview);
 $('genBtn').addEventListener('click', generateAll);
 $('zipBtn').addEventListener('click', downloadZip);
+$('pdfBtn').addEventListener('click', downloadPdf);
 
 })();

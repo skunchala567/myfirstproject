@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Tool's Access",
-  description: "Direct access hub for QuickTools modules"
+  title: "MarketFarmer.in | Agricultural Market Price Dashboard",
+  description: "Daily agricultural market price dashboard for commodities, states, mandis, livestock, poultry, fish, and dairy."
 };
 
 export default function RootLayout({ children }) {

@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,6 +219,11 @@ header .subtitle {
 .generate-actions .btn{min-height:52px;height:auto;justify-content:center;text-align:center;min-width:0;white-space:normal;line-height:1.2}
 .generate-actions .btn .ic{flex:0 0 42px}
 .generate-panel .progress{grid-column:1/-1;margin-top:2px}
+.pdf-options-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;grid-column:1/-1}
+.pdf-option{display:grid;gap:7px;text-align:left}
+.pdf-option label{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.pdf-option select{width:100%;font-family:'Inter Tight',sans-serif;font-size:14px;padding:10px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--paper-2);color:var(--ink)}
+.pdf-option .hint{margin:0;font-size:11.5px}
 
 .canvas-wrap{
   position:relative;border-radius:14px;padding:22px;
@@ -314,6 +320,7 @@ tr:nth-child(even) td{background:rgba(234,227,212,.35)}
   .canvas-wrap{padding:14px}
   .empty-canvas{min-height:240px}
   .field-type-options{grid-template-columns:1fr}
+  .pdf-options-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -418,6 +425,30 @@ tr:nth-child(even) td{background:rgba(234,227,212,.35)}
         <button class="btn" id="previewBtn" disabled><span class="ic">VIEW</span> Preview Selected Row</button>
         <button class="btn dark" id="genBtn" disabled><span class="ic">RUN</span> Generate Certificates</button>
         <button class="btn accent" id="zipBtn" disabled><span class="ic">ZIP</span> Download ZIP</button>
+        <button class="btn accent" id="pdfBtn" disabled><span class="ic">PDF</span> Download PDF</button>
+        <div class="pdf-options-grid">
+          <div class="pdf-option">
+            <label for="certsPerPage">Certificates per A4 PDF page</label>
+            <select id="certsPerPage">
+              <option value="1">1 certificate per page</option>
+              <option value="2">2 certificates per page</option>
+              <option value="4">4 certificates per page</option>
+              <option value="6" selected>6 certificates per page</option>
+              <option value="8">8 certificates per page</option>
+              <option value="10">10 certificates per page</option>
+              <option value="12">12 certificates per page</option>
+            </select>
+            <p class="hint">Example: 8 generated certificates with 6 per page creates 2 A4 pages.</p>
+          </div>
+          <div class="pdf-option">
+            <label for="certPageOrientation">A4 page style</label>
+            <select id="certPageOrientation">
+              <option value="portrait" selected>Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+            <p class="hint">Choose portrait or landscape before downloading the PDF.</p>
+          </div>
+        </div>
         <div class="progress" id="prog">
           <div class="bar"><i id="progBar"></i></div>
           <div class="ptxt" id="progTxt">Working...</div>

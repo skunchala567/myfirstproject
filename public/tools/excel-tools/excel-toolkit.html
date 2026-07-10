@@ -246,6 +246,34 @@ header.top {
   .grid { grid-template-columns: 1fr; }
 }
 
+.excel-workbench {
+  display: grid;
+  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.excel-tool-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  padding: 16px;
+}
+
+.tool-panel-title {
+  margin: 0 0 12px;
+  color: var(--text-mute);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.excel-tab-area {
+  min-width: 0;
+}
+
 /* ---------- Drop zone ---------- */
 .dropzone {
   position: relative;
@@ -674,35 +702,36 @@ footer.foot a:hover { color: var(--accent); }
 @keyframes spin { to { transform: rotate(360deg); } }
 /* ---------- Tabs ---------- */
 .tabs-nav {
-  display: flex;
+  display: grid;
   gap: 8px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
-  overflow-x: auto;
 }
 .tab-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
   color: var(--text-dim);
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 14px;
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
+  font-weight: 700;
+  text-align: left;
   transition: all 0.2s ease;
-  white-space: nowrap;
 }
 .tab-btn:hover {
   color: var(--text);
-  border-bottom-color: var(--border);
+  border-color: var(--border);
+  background: var(--bg-elev-2);
 }
 .tab-btn.active {
   color: var(--accent);
-  border-bottom-color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 .tab-content {
   display: none;
@@ -713,6 +742,18 @@ footer.foot a:hover { color: var(--accent); }
 
 @media (max-width: 760px) {
   body { padding-left: 0; padding-top: 0; }
+
+  .excel-workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .excel-tool-panel {
+    padding: 12px;
+  }
+
+  .tabs-nav {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
 }
 </style>
 <link rel="stylesheet" href="../../core/base-theme.css?v=20260710">
@@ -751,25 +792,29 @@ footer.foot a:hover { color: var(--accent); }
     into one clean download.
   </p> -->
 
-  <!-- MAIN GRID -->
-  <div class="grid">
+  <!-- MAIN WORKBENCH -->
+  <div class="excel-workbench">
 
-    <!-- Section Tabs -->
-    <div style="grid-column: 1 / -1; margin-bottom: 20px;">
+    <!-- Tool Tabs -->
+    <aside class="excel-tool-panel" aria-label="Excel Toolkit tools">
+      <h2 class="tool-panel-title">Tools</h2>
       <div class="tabs-nav">
         <button class="tab-btn active" data-tab="merge-files">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Merge Multiple Files
-        </span></button>
+        </button>
         <button class="tab-btn" data-tab="merge-sheets">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
           Merge Sheets / Split Sheet
-        </span></button>
+        </button>
       </div>
-    </div>
+    </aside>
+
+    <div class="excel-tab-area">
 
     <!-- TAB 1: Merge Multiple Files (original functionality) -->
     <div class="tab-content active" data-tab-content="merge-files">
+    <div class="grid">
     <!-- LEFT: Upload + file list -->
     <div class="card card-pad">
       <div class="dropzone" id="dropzone">
@@ -868,10 +913,11 @@ footer.foot a:hover { color: var(--accent); }
       </div>
     </div>
     </div>
+    </div>
     <!-- END TAB 1 -->
 
     <!-- TAB 2: Merge Sheets or Split Sheet -->
-    <div class="tab-content" data-tab-content="merge-sheets" style="grid-column: 1 / -1;">
+    <div class="tab-content" data-tab-content="merge-sheets">
       <div class="card card-pad">
         <div style="margin-bottom: 24px;">
           <div class="mode-label">Operation</div>
@@ -1037,6 +1083,7 @@ footer.foot a:hover { color: var(--accent); }
       </div>
     </div>
     <!-- END TAB 2 -->
+    </div>
   </div>
 <!--
   <footer class="foot">
