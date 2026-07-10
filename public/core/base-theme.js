@@ -1,6 +1,7 @@
 (function () {
   const KEY = "creator-studio-theme";
   const LEGACY_KEY = "sheetfusion-theme";
+  const NAV_KEY = "creator-studio-nav-collapsed";
   const root = document.documentElement;
 
   function storedTheme() {
@@ -71,11 +72,72 @@
     });
   }
 
+  function storedNavCollapsed() {
+    try {
+      return localStorage.getItem(NAV_KEY) === "true";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function saveNavCollapsed(collapsed) {
+    try {
+      localStorage.setItem(NAV_KEY, collapsed ? "true" : "false");
+    } catch (error) {
+      /* The current page still responds even when storage is unavailable. */
+    }
+  }
+
+  function updateNavControls(collapsed) {
+    document.querySelectorAll("[data-nav-toggle]").forEach((button) => {
+      button.setAttribute("aria-pressed", collapsed ? "true" : "false");
+      button.setAttribute("aria-label", collapsed ? "Show navigation" : "Hide navigation");
+      button.setAttribute("title", collapsed ? "Show navigation" : "Hide navigation");
+      button.textContent = collapsed ? "NAV" : "HIDE";
+    });
+  }
+
+  function applyNavCollapsed(collapsed) {
+    root.classList.toggle("app-nav-collapsed", collapsed);
+    if (document.body) {
+      document.body.classList.toggle("app-nav-collapsed", collapsed);
+    }
+    saveNavCollapsed(collapsed);
+    updateNavControls(collapsed);
+  }
+
+  function toggleNavCollapsed() {
+    applyNavCollapsed(!root.classList.contains("app-nav-collapsed"));
+  }
+
+  function createNavToggle() {
+    if (document.querySelector("[data-nav-toggle]")) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "nav-collapse-toggle";
+    button.dataset.navToggle = "true";
+    document.body.appendChild(button);
+  }
+
+  function bindNavControls() {
+    createNavToggle();
+    document.querySelectorAll("[data-nav-toggle]").forEach((button) => {
+      if (button.dataset.navBound === "true") return;
+      button.dataset.navBound = "true";
+      button.addEventListener("click", toggleNavCollapsed);
+    });
+    applyNavCollapsed(storedNavCollapsed());
+  }
+
   applyTheme(storedTheme());
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bindThemeControls);
+    document.addEventListener("DOMContentLoaded", function () {
+      bindThemeControls();
+      bindNavControls();
+    });
   } else {
     bindThemeControls();
+    bindNavControls();
   }
 }());

@@ -5,8 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "live-server --port=3000",
-    "serve": "http-server -p 3000 -o",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "serve": "next dev",
     "format": "prettier --write \"**/*.{html,css,js,json,md}\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -21,6 +23,11 @@
   ],
   "author": "Claude Code",
   "license": "MIT",
+  "dependencies": {
+    "next": "16.2.9",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
   "devDependencies": {
     "eslint": "^10.5.0",
     "http-server": "^14.1.1",

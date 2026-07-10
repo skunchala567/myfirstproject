@@ -245,6 +245,57 @@ small,
   font-weight: 800;
 }
 
+.nav-collapse-toggle {
+  position: fixed;
+  top: 18px;
+  right: 76px;
+  z-index: 10020;
+  width: 54px;
+  height: 38px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg-elev-2);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: var(--shadow-lg);
+}
+
+.nav-collapse-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.app-nav-collapsed body > header,
+body.app-nav-collapsed > header,
+.app-nav-collapsed header.top,
+.app-nav-collapsed header.app,
+.app-nav-collapsed .app-sidebar,
+.app-nav-collapsed .rail,
+.app-nav-collapsed .sidebar {
+  display: none !important;
+}
+
+.app-nav-collapsed .shell {
+  grid-template-columns: 1fr !important;
+  min-height: 100vh;
+}
+
+.app-nav-collapsed .stage {
+  max-height: none !important;
+}
+
+.app-nav-collapsed body,
+body.app-nav-collapsed {
+  padding-top: 0 !important;
+  padding-left: 0 !important;
+}
+
 .btn .ic,
 .toast .ic {
   width: 42px !important;
@@ -446,6 +497,13 @@ td {
   body {
     padding-left: 0;
     padding-top: 72px;
+  }
+
+  .nav-collapse-toggle {
+    top: 12px;
+    right: 64px;
+    width: 50px;
+    height: 36px;
   }
 
   .app-sidebar {
