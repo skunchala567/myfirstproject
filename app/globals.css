@@ -79,6 +79,7 @@ select {
   justify-content: space-between;
   gap: 18px;
   padding: 16px clamp(18px, 4vw, 56px);
+  padding-right: clamp(132px, 14vw, 178px);
   background: rgba(248, 246, 239, 0.9);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
@@ -111,6 +112,11 @@ select {
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
+}
+
+.mfNav div {
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .mfNav a:not(.brand),
@@ -602,12 +608,19 @@ th {
   .mfNav {
     align-items: flex-start;
     flex-direction: column;
+    padding-right: 96px;
   }
 
   .toolsShortcut,
   .topRightLink {
     top: 12px;
     right: 12px;
+    padding: 9px 13px;
+  }
+
+  .mfNav div {
+    justify-content: flex-start;
+    gap: 12px;
   }
 
   .mfHero {
